@@ -337,7 +337,11 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
 
   return (
     <div className="h-full flex">
-      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${selectedMessage ? 'opacity-50 pointer-events-none' : ''}`}>
+      <div 
+        className={`flex-1 overflow-y-auto p-4 space-y-4 transition-opacity duration-300 ${
+          selectedMessage ? 'opacity-50 pointer-events-none' : 'opacity-100'
+        }`}
+      >
         {messages.map((message) => (
           <div
             key={message.id}
@@ -394,140 +398,146 @@ const ConversationView: React.FC<ConversationViewProps> = ({ conversationId }) =
       </div>
 
       {/* Full Page Panel */}
-      {selectedMessage && (
-        <div className="fixed inset-y-0 right-0 left-[180px] bg-white z-50 flex flex-col">
-          <div className="h-16 border-b border-gray-200 flex items-center px-4">
-            <button
-              onClick={() => setSelectedMessage(null)}
-              className="text-gray-400 hover:text-gray-500 mr-4"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <div className="flex space-x-4">
+      <div 
+        className={`fixed inset-y-0 right-0 left-[180px] bg-white z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+          selectedMessage ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {selectedMessage && (
+          <>
+            <div className="h-16 border-b border-gray-200 flex items-center px-4">
               <button
-                onClick={() => setActiveTab('evaluation')}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
-                  activeTab === 'evaluation'
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+                onClick={() => setSelectedMessage(null)}
+                className="text-gray-400 hover:text-gray-500 mr-4 transition-colors"
               >
-                <BarChart2 size={16} />
-                <span className="text-sm">评估</span>
+                <ChevronLeft size={20} />
               </button>
-              <button
-                onClick={() => setActiveTab('trace')}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-md ${
-                  activeTab === 'trace'
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <Code size={16} />
-                <span className="text-sm">系统 Trace</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {activeTab === 'evaluation' ? (
-              <div className="max-w-3xl mx-auto p-8 space-y-8">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-900">{selectedMessage.content}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        回答准确性
-                      </label>
-                      <RatingStars
-                        value={evaluation.accuracy}
-                        onChange={(value: number) => handleRatingChange('accuracy', value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        回答相关性
-                      </label>
-                      <RatingStars
-                        value={evaluation.relevance}
-                        onChange={(value: number) => handleRatingChange('relevance', value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        语言流畅度
-                      </label>
-                      <RatingStars
-                        value={evaluation.fluency}
-                        onChange={(value: number) => handleRatingChange('fluency', value)}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      评估备注
-                    </label>
-                    <textarea
-                      value={evaluation.notes}
-                      onChange={handleNotesChange}
-                      rows={8}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="请输入评估备注..."
-                    />
-                  </div>
-                </div>
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setActiveTab('evaluation')}
+                  className={`flex items-center space-x-1 px-3 py-1 rounded-md transition-colors ${
+                    activeTab === 'evaluation'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <BarChart2 size={16} />
+                  <span className="text-sm">评估</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('trace')}
+                  className={`flex items-center space-x-1 px-3 py-1 rounded-md transition-colors ${
+                    activeTab === 'trace'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Code size={16} />
+                  <span className="text-sm">系统 Trace</span>
+                </button>
               </div>
-            ) : (
-              <div className="max-w-4xl mx-auto p-8 space-y-8">
-                {selectedMessage.trace && (
-                  <>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm font-medium text-gray-700 mb-1">总调用次数</div>
-                        <div className="text-sm text-gray-900">{selectedMessage.trace.calls.length}</div>
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm font-medium text-gray-700 mb-1">总 Token 数</div>
-                        <div className="text-sm text-gray-900">
-                          {selectedMessage.trace.calls.reduce((sum, call) => sum + call.tokens, 0)}
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-sm font-medium text-gray-700 mb-1">总延迟</div>
-                        <div className="text-sm text-gray-900">
-                          {selectedMessage.trace.calls.reduce((sum, call) => sum + call.latency, 0).toFixed(1)}s
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      {selectedMessage.trace.calls.map((call) => (
-                        <ModelCallCard 
-                          key={call.id} 
-                          call={call}
-                          onEvaluationChange={handleCallEvaluationChange}
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {activeTab === 'evaluation' ? (
+                <div className="max-w-3xl mx-auto p-8 space-y-8">
+                  <div className="bg-gray-50 p-4 rounded-lg transition-colors">
+                    <p className="text-sm text-gray-900">{selectedMessage.content}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          回答准确性
+                        </label>
+                        <RatingStars
+                          value={evaluation.accuracy}
+                          onChange={(value: number) => handleRatingChange('accuracy', value)}
                         />
-                      ))}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          回答相关性
+                        </label>
+                        <RatingStars
+                          value={evaluation.relevance}
+                          onChange={(value: number) => handleRatingChange('relevance', value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          语言流畅度
+                        </label>
+                        <RatingStars
+                          value={evaluation.fluency}
+                          onChange={(value: number) => handleRatingChange('fluency', value)}
+                        />
+                      </div>
                     </div>
-                  </>
-                )}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        评估备注
+                      </label>
+                      <textarea
+                        value={evaluation.notes}
+                        onChange={handleNotesChange}
+                        rows={8}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        placeholder="请输入评估备注..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-w-4xl mx-auto p-8 space-y-8">
+                  {selectedMessage.trace && (
+                    <>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg transition-colors">
+                          <div className="text-sm font-medium text-gray-700 mb-1">总调用次数</div>
+                          <div className="text-sm text-gray-900">{selectedMessage.trace.calls.length}</div>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg transition-colors">
+                          <div className="text-sm font-medium text-gray-700 mb-1">总 Token 数</div>
+                          <div className="text-sm text-gray-900">
+                            {selectedMessage.trace.calls.reduce((sum, call) => sum + call.tokens, 0)}
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg transition-colors">
+                          <div className="text-sm font-medium text-gray-700 mb-1">总延迟</div>
+                          <div className="text-sm text-gray-900">
+                            {selectedMessage.trace.calls.reduce((sum, call) => sum + call.latency, 0).toFixed(1)}s
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        {selectedMessage.trace.calls.map((call) => (
+                          <ModelCallCard 
+                            key={call.id} 
+                            call={call}
+                            onEvaluationChange={handleCallEvaluationChange}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {activeTab === 'evaluation' && (
+              <div className="h-16 border-t border-gray-200 flex items-center justify-end px-8">
+                <button
+                  onClick={handleSaveEvaluation}
+                  className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                >
+                  保存评估
+                </button>
               </div>
             )}
-          </div>
-
-          {activeTab === 'evaluation' && (
-            <div className="h-16 border-t border-gray-200 flex items-center justify-end px-8">
-              <button
-                onClick={handleSaveEvaluation}
-                className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-              >
-                保存评估
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
