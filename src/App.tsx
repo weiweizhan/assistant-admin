@@ -8,6 +8,10 @@ import AICallPage from './pages/AICallPage';
 import MetricsManagementPage from './pages/MetricsManagementPage';
 import PlaygroundPage from './pages/PlaygroundPage';
 import SettingsPage from './pages/SettingsPage';
+import UserManagementPage from './pages/UserManagementPage';
+import ModelManagementPage from './pages/ModelManagementPage';
+import DatasetPage from './pages/DatasetPage';
+import ComponentPage from './pages/ComponentPage';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +25,10 @@ const App: React.FC = () => {
           <Route path="data-labeling/metrics" element={<MetricsManagementPage />} />
           <Route path="playground" element={<PlaygroundPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="users" element={<UserManagementPage />} />
+          <Route path="models" element={<ModelManagementPage />} />
+          <Route path="datasets" element={<DatasetPage />} />
+          <Route path="components" element={<ComponentPage />} />
         </Route>
       </Routes>
     </Router>
