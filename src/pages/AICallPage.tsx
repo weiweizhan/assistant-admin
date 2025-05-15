@@ -4,14 +4,15 @@ import ConversationView from '../components/labeling/ConversationView';
 import EvaluationPanel from '../components/labeling/EvaluationPanel';
 import { mockConversations } from '../data/mock-data';
 import { Conversation } from '../types/types';
-import { Filter, Search, BarChart2, Users, MessageSquare, AlertTriangle } from 'lucide-react';
+import { Filter, Search, BarChart2, Users, MessageSquare, AlertTriangle, Play, Pause } from 'lucide-react';
 
-const DataLabelingPage: React.FC = () => {
+const AICallPage: React.FC = () => {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(
     mockConversations.length > 0 ? mockConversations[0] : null
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const filteredConversations = mockConversations.filter(
     (conv) => 
@@ -19,29 +20,34 @@ const DataLabelingPage: React.FC = () => {
       conv.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handlePlayAudio = () => {
+    setIsPlaying(!isPlaying);
+    // TODO: 实现音频播放逻辑
+  };
+
   return (
     <div className="h-full flex flex-col">
       <header className="bg-white shadow-sm z-10">
         <div className="px-6 py-4">
-          <h1 className="text-2xl font-semibold text-gray-900">数据标注</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">AI外呼</h1>
           <p className="mt-1 text-sm text-gray-500">
-            审查和评估AI助手对话
+            审查和评估AI外呼对话
           </p>
         </div>
       </header>
 
       {/* Stats cards */}
-      <div className="px-6 py-4 bg-gray-50">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      {/* <div className="px-6 py-4 bg-gray-50"> */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <StatCard
-            title="总对话数"
+            title="总外呼数"
             value="1,284"
             change="+12.5%"
             positive={true}
             icon={<MessageSquare size={24} className="text-blue-600" />}
           />
           <StatCard
-            title="已标注对话"
+            title="已标注外呼"
             value="843"
             change="+8.3%"
             positive={true}
@@ -61,24 +67,9 @@ const DataLabelingPage: React.FC = () => {
             positive={true}
             icon={<AlertTriangle size={24} className="text-amber-500" />}
           />
-        </div>
+        </div> */}
 
-        {/* Charts placeholder */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">对话指标</h2>
-            <div className="h-64 flex items-center justify-center border border-dashed border-gray-300 rounded-lg">
-              <p className="text-gray-500">图表将在此处显示</p>
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">标注进度</h2>
-            <div className="h-64 flex items-center justify-center border border-dashed border-gray-300 rounded-lg">
-              <p className="text-gray-500">图表将在此处显示</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* </div> */}
 
       <div className="px-6 py-2 border-b border-gray-200 flex items-center justify-between">
         <div className="relative w-72">
@@ -155,7 +146,40 @@ const DataLabelingPage: React.FC = () => {
             {/* Selected conversation view */}
             <div className="w-full md:w-3/5 overflow-y-auto">
               {selectedConversation && (
-                <ConversationView conversation={selectedConversation} />
+                <>
+                  <ConversationView conversation={selectedConversation} />
+                  {/* Audio player */}
+                  <div className="border-t border-gray-200 p-4 bg-white">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <button
+                          onClick={handlePlayAudio}
+                          className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                        </button>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">外呼录音</p>
+                          <p className="text-xs text-gray-500">00:00 / 05:30</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button className="text-sm text-gray-600 hover:text-gray-900">
+                          下载
+                        </button>
+                        <button className="text-sm text-gray-600 hover:text-gray-900">
+                          分享
+                        </button>
+                      </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="mt-4">
+                      <div className="h-1 bg-gray-200 rounded-full">
+                        <div className="h-1 bg-blue-600 rounded-full w-1/3"></div>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -197,4 +221,4 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, positive, ico
   );
 };
 
-export default DataLabelingPage;
+export default AICallPage; 
